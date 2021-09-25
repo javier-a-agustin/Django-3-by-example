@@ -1,0 +1,16 @@
+asgiref==3.4.1
+astroid==2.5
+colorama==0.4.4
+Django==3.2.7
+django-cors-headers==3.7.0
+django-timezone-field==4.2.1
+isort==5.7.0
+lazy-object-proxy==1.5.2
+mccabe==0.6.1
+pylint==2.7.1
+python-dateutil==2.8.2
+pytz==2021.1
+six==1.16.0
+sqlparse==0.4.1
+toml==0.10.2
+wrapt==1.12.1

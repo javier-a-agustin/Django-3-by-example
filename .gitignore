@@ -1,1 +1,3 @@
 env/
+**/__pycache__/
+DJANGO_3_BY_EXAMPLE.pdf
