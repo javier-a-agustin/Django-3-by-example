@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#zj^so3s^&#49r^=k7-ma5(806=%+5^*0c-vb((7zxu0j0tdrn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1']
 
@@ -51,6 +51,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mysite.urls'
+
+DEFAULT_EXCEPTION_REPORTER = 'blog.ExceptionHandler.ExceptionHandler'
 
 TEMPLATES = [
     {
@@ -133,3 +135,4 @@ EMAIL_HOST_PASSWORD     = 'icveamehwqxjypgv'
 EMAIL_PORT              = 587
 EMAIL_USE_TLS           = True
 
+ADMINS = [('Javier', '22.javier.fernandez@gmail.com')]

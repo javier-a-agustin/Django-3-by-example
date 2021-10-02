@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 ### Django classes based views import ###
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 
 ### Import models ###
 from .models import Post
