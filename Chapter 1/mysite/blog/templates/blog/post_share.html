@@ -1,0 +1,33 @@
+{% extends "blog/base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<h1>{{ post.title }}</h1>
+<p class="date">
+    Published {{ post.publish }} by {{ post.author }}
+</p>
+{{ post.body|linebreaks }}
+
+{% if sent == True %}
+	<h1>E-mail successfully sent</h1>
+	<p>
+		"{{ post.title }}" was successfully sent to {{ form.cleaned_data.to }}.
+	</p>
+{% elif sent == False %}
+	<h1>E-mail unsuccessfully sent</h1>
+	<p>
+		"{{ post.title }}" was not sent to {{ form.cleaned_data.to }}.
+	</p>
+{% endif %}
+
+<h1>Share "{{ post.title }}" by e-mail</h1>
+<form method="post"> {% csrf_token %}
+	{% for field in form %}
+	<div>
+		{{ field.errors }}
+		{{ field.label_tag }} {{ field }}
+	</div>
+	{% endfor %}
+	<input type="submit" value="Send e-mail">
+</form>
+
+{% endblock %}

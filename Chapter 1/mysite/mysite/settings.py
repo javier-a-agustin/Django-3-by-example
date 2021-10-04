@@ -15,8 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
-print(DEBUG)
+DEBUG = int(os.getenv("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
 
@@ -122,10 +121,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND           = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST              = 'smtp.gmail.com'
+EMAIL_HOST_USER         = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD     = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_PORT              = 587
 EMAIL_USE_TLS           = True
 
 ADMINS = [('Javier', '22.javier.fernandez@gmail.com')]
 
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")

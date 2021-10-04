@@ -5,6 +5,6 @@ class ExceptionHandler(ExceptionReporter):
 
 		data = super().get_traceback_data()
 		# ... remove/add something here ...
-		for i in data.keys():
-			print(i, data[i])
+		# for i in data.keys():
+		# 	print(i, data[i])
 		return data
