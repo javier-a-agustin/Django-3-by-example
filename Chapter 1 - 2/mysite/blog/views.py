@@ -12,15 +12,29 @@ from django.views.generic.edit import FormView
 
 ### Import models ###
 from .models import Post
+from taggit.models import Tag
 
 ### Import formds ###
 from .forms import EmailPostForm, CommentForm
 
 class PostListView(ListView):
-	queryset = Post.published.all()
-	context_object_name = 'posts'
-	paginate_by = 3
-	template_name = 'blog/post/list.html'
+    queryset = Post.published.all()
+    context_object_name = 'posts'
+    paginate_by = 3
+    template_name = 'blog/post/list.html'
+
+    def get_queryset(self):
+        tag_slug    = self.kwargs.get('tag_slug', None)
+        self.tag         = None
+        if tag_slug:
+            self.tag      = get_object_or_404(Tag, slug=tag_slug)
+            self.queryset = self.queryset.filter(tags__in=[self.tag])
+        return self.queryset#render_to_response(self.get_context_data(object_list=self.queryset, tag=tag))
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["tag"] = self.tag
+        return context
 
 class PostDetailView(FormView, DetailView):	
     model           = Post
