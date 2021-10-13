@@ -16,3 +16,5 @@ class CommentAdmin(admin.ModelAdmin):
     list_display            = ('name', 'email', 'post_id', 'created', 'active')
     list_filter             = ('active', 'created', 'updated')
     search_fields           = ('name', 'email', 'body')
+    ordering                = ('-post_id__title', )
+

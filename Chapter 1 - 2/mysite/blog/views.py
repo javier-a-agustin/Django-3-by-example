@@ -1,13 +1,13 @@
 ### Django function based view import ###
 from typing import Any, Dict
 from django.http.response import HttpResponse
-from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.urls import reverse
+from django.db.models import Count
 
 ### Django classes based views import ###
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 
 ### Import models ###
@@ -18,23 +18,31 @@ from taggit.models import Tag
 from .forms import EmailPostForm, CommentForm
 
 class PostListView(ListView):
+    """Class to display the list of all published posts"""
+
     queryset = Post.published.all()
     context_object_name = 'posts'
     paginate_by = 3
     template_name = 'blog/post/list.html'
 
     def get_queryset(self):
-        tag_slug    = self.kwargs.get('tag_slug', None)
-        self.tag         = None
+        """
+        Return the queryset that will be displayed
+        If there are tags, the queryset will be filtered by tags.
+        If there are not tags, it will return all published posts.
+        """
+        tag_slug            = self.kwargs.get('tag_slug', None)
+        self.tag            = None
         if tag_slug:
-            self.tag      = get_object_or_404(Tag, slug=tag_slug)
-            self.queryset = self.queryset.filter(tags__in=[self.tag])
-        return self.queryset#render_to_response(self.get_context_data(object_list=self.queryset, tag=tag))
+            self.tag        = get_object_or_404(Tag, slug=tag_slug)
+            self.queryset   = self.queryset.filter(tags__in=[self.tag])
+        return self.queryset
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["tag"] = self.tag
         return context
+
 
 class PostDetailView(FormView, DetailView):	
     model           = Post
@@ -50,6 +58,18 @@ class PostDetailView(FormView, DetailView):
         comment.post_id = post
         comment.save()
         return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        # List of similar posts
+        post = self.get_object()
+        post_tags_ids = post.tags.values_list('id', flat=True)
+        similar_posts = Post.published.filter(tags__in=post_tags_ids)\
+                                    .exclude(id=post.id)
+        similar_posts = similar_posts.annotate(same_tags=Count('tags'))\
+                                    .order_by('-same_tags','-publish')[:4]
+        context = super().get_context_data(**kwargs)
+        context["similar_posts"] = similar_posts                               
+        return context
 
 
 class PostShareView(FormView, DetailView):
