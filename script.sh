@@ -1,8 +1,12 @@
-[ -d env ] || python -m venv env
+# Virtual env name: d3
 
-./env/Scripts/activate
+# [ -d env ] || python -m venv env
 
-cd './Chapter 1'
+# ./env/Scripts/activate
+
+RUN pyenv activate d3
+
+cd './Chapter 1 - 2 - 3'
 cd './mysite'
 python manage.py runserver
 
