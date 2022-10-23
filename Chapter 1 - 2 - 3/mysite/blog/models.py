@@ -1,13 +1,17 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls.base import reverse
 from django.utils import timezone
-from django.contrib.auth.models import User
 from taggit.managers import TaggableManager
 
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
-        return super(PublishedManager, self).get_queryset().filter(status="published")
+        return (
+            super(PublishedManager, self)
+            .get_queryset()
+            .filter(status="published")
+        )
 
 
 class Post(models.Model):
@@ -19,13 +23,19 @@ class Post(models.Model):
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250, unique_for_date="publish")
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="blog_posts"
+        User,
+        on_delete=models.CASCADE,
+        related_name="blog_posts",
     )
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="draft")
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default="draft",
+    )
 
     objects = models.Manager()
     published = PublishedManager()
@@ -41,7 +51,11 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    post_id = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    post_id = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name="comments",
+    )
     name = models.CharField(max_length=80)
     email = models.EmailField()
     body = models.TextField()

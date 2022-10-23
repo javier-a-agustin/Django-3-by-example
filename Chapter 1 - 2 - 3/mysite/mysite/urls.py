@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 
 def my_error(request):
@@ -9,5 +9,8 @@ def my_error(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("my_error/", my_error),
-    path("blog/", include("blog.urls", namespace="blog")),
+    path(
+        "blog/",
+        include("blog.urls", namespace="blog"),
+    ),
 ]

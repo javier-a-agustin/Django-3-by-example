@@ -1,21 +1,14 @@
-### Django function based view import ###
-from typing import Any, Dict
+from django.core.mail import send_mail
+from django.db.models import Count
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.core.mail import send_mail
 from django.urls import reverse
-from django.db.models import Count
-
-### Django classes based views import ###
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormView
-
-### Import models ###
-from .models import Post
 from taggit.models import Tag
 
-### Import formds ###
-from .forms import EmailPostForm, CommentForm
+from .forms import CommentForm, EmailPostForm
+from .models import Post
 
 
 class PostListView(ListView):
@@ -39,7 +32,7 @@ class PostListView(ListView):
             self.queryset = self.queryset.filter(tags__in=[self.tag])
         return self.queryset
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tag"] = self.tag
         return context
@@ -51,7 +44,10 @@ class PostDetailView(FormView, DetailView):
 
     def get_success_url(self):
         object = self.get_object()
-        return reverse("blog:post_detail", kwargs={"slug": object.slug})
+        return reverse(
+            "blog:post_detail",
+            kwargs={"slug": object.slug},
+        )
 
     def form_valid(self, form: CommentForm) -> HttpResponse:
         post = self.get_object()
@@ -60,16 +56,16 @@ class PostDetailView(FormView, DetailView):
         comment.save()
         return super().form_valid(form)
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs):
         # List of similar posts
         post = self.get_object()
         post_tags_ids = post.tags.values_list("id", flat=True)
         similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(
             id=post.id
         )
-        similar_posts = similar_posts.annotate(same_tags=Count("tags")).order_by(
-            "-same_tags", "-publish"
-        )[:4]
+        similar_posts = similar_posts.annotate(
+            same_tags=Count("tags")
+        ).order_by("-same_tags", "-publish")[:4]
         context = super().get_context_data(**kwargs)
         context["similar_posts"] = similar_posts
         return context
@@ -86,18 +82,29 @@ class PostShareView(FormView, DetailView):
         cd = form.cleaned_data
         post_url = self.request.build_absolute_uri(post.get_absolute_url())
         subject = f"{cd['name']} recommends you read {post.title}"
-        message = f"Read {post.title} at {post_url}\n\n {cd['name']}'s comments: {cd['comments']}"
+        message = f"Read {post.title} at {post_url}\n\n {cd['name']}'s \
+            comments: {cd['comments']}"
         try:
-            send_mail(subject, message, "admin@myblog.com", [cd["to"]])
+            send_mail(
+                subject,
+                message,
+                "admin@myblog.com",
+                [cd["to"]],
+            )
             sent = True
-        except Exception as e:
+        except Exception:
             sent = False
         self.object = self.get_object()
-        return self.render_to_response(self.get_context_data(form=form, sent=sent))
+        return self.render_to_response(
+            self.get_context_data(form=form, sent=sent)
+        )
 
     def get_success_url(self) -> str:
         object = self.get_object()
-        return reverse("blog:post_share", kwargs={"slug": object.slug})
+        return reverse(
+            "blog:post_share",
+            kwargs={"slug": object.slug},
+        )
 
 
 # def post_list(request):

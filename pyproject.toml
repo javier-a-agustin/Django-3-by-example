@@ -1,0 +1,22 @@
+[tool.flake8]
+ignore = 'E309, E128, E501, W504, E402, E124'
+max-line-length = 79
+max-complexity = 18
+select = 'B,C,E,F,W,T4,B9'
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''

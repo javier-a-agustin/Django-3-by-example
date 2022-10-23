@@ -1,21 +1,23 @@
-from django.test import TestCase, RequestFactory
-from django.test import Client
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
 from django.utils import timezone
 
 from .models import Post
-
-from .views import PostListView
 
 
 class PostListTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.author = User.objects.create_user(
-            "testuser", "test@user.com", "secretpassword"
+            "testuser",
+            "test@user.com",
+            "secretpassword",
         )
-        post = Post.objects.create(
-            title="Test Post", slug="test-post", author=self.author, status="published"
+        Post.objects.create(
+            title="Test Post",
+            slug="test-post",
+            author=self.author,
+            status="published",
         )
 
     def test_post_list(self):
@@ -41,7 +43,10 @@ class PostListTest(TestCase):
             status="published",
         )
         Post.objects.create(
-            title="Test Post 3", slug="test-post-3", author=self.author, status="draft"
+            title="Test Post 3",
+            slug="test-post-3",
+            author=self.author,
+            status="draft",
         )
         response = self.client.get("/blog/")
         # Check that the response is 200 OK.
@@ -66,7 +71,10 @@ class PostListTest(TestCase):
         )
 
         Post.objects.create(
-            title="Test Post 3", slug="test-post-3", author=self.author, status="draft"
+            title="Test Post 3",
+            slug="test-post-3",
+            author=self.author,
+            status="draft",
         )
         today = timezone.now()
         today = today.strftime("%Y/%m/%d")
